@@ -1,0 +1,1013 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AHP Expert Survey — Indian Infrastructure Sustainability</title>
+  <style>
+    /* ── Reset & Base ── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+      background: #0a0f1e;
+      color: #e2e8f0;
+      min-height: 100vh;
+      line-height: 1.6;
+    }
+    a { color: inherit; text-decoration: none; }
+    button { cursor: pointer; font-family: inherit; }
+    input, select { font-family: inherit; }
+
+    /* ── Scrollbar ── */
+    ::-webkit-scrollbar { width: 8px; }
+    ::-webkit-scrollbar-track { background: #0a0f1e; }
+    ::-webkit-scrollbar-thumb { background: #2d3a52; border-radius: 4px; }
+
+    /* ── Navbar ── */
+    .navbar {
+      position: sticky; top: 0; z-index: 100;
+      background: rgba(10,15,30,0.95);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid #2d3a52;
+      padding: 0 2rem;
+      display: flex; align-items: center; justify-content: space-between;
+      height: 64px;
+    }
+    .navbar-logo {
+      display: flex; align-items: center; gap: 10px;
+      font-size: 1.2rem; font-weight: 800; letter-spacing: -0.5px;
+    }
+    .logo-icon {
+      width: 36px; height: 36px; border-radius: 8px;
+      background: linear-gradient(135deg, #06b6d4, #8b5cf6);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1rem; font-weight: 900;
+    }
+    .logo-text { color: #f1f5f9; }
+    .logo-accent { color: #06b6d4; }
+    .navbar-actions { display: flex; align-items: center; gap: 12px; }
+    .btn-nav-home {
+      display: flex; align-items: center; gap: 6px;
+      color: #94a3b8; font-size: 0.875rem; font-weight: 500;
+      padding: 8px 14px; border-radius: 8px;
+      border: 1px solid transparent;
+      background: transparent;
+      transition: all 0.2s;
+    }
+    .btn-nav-home:hover { color: #e2e8f0; background: #1a2234; border-color: #2d3a52; }
+    .btn-saved {
+      display: flex; align-items: center; gap: 6px;
+      color: #06b6d4; font-size: 0.875rem; font-weight: 600;
+      padding: 8px 16px; border-radius: 8px;
+      border: 1px solid rgba(6,182,212,0.4);
+      background: rgba(6,182,212,0.08);
+      transition: all 0.2s;
+    }
+    .btn-saved:hover { background: rgba(6,182,212,0.18); border-color: #06b6d4; }
+
+    /* ── Hero ── */
+    .hero {
+      background: linear-gradient(180deg, rgba(6,182,212,0.06) 0%, transparent 100%);
+      border-bottom: 1px solid #2d3a52;
+      padding: 3rem 2rem 2.5rem;
+      text-align: center;
+    }
+    .hero-badge {
+      display: inline-flex; align-items: center; gap: 6px;
+      background: rgba(6,182,212,0.12); border: 1px solid rgba(6,182,212,0.35);
+      color: #06b6d4; font-size: 0.78rem; font-weight: 700;
+      letter-spacing: 1.5px; text-transform: uppercase;
+      padding: 5px 14px; border-radius: 100px;
+      margin-bottom: 1.2rem;
+    }
+    .hero-title {
+      font-size: clamp(1.8rem, 4vw, 2.8rem);
+      font-weight: 900; letter-spacing: -1px;
+      background: linear-gradient(135deg, #f1f5f9 30%, #06b6d4 100%);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: 0.8rem;
+    }
+    .hero-subtitle {
+      max-width: 600px; margin: 0 auto 2rem;
+      color: #64748b; font-size: 1rem;
+    }
+    .progress-wrap { max-width: 500px; margin: 0 auto; }
+    .progress-label {
+      display: flex; justify-content: space-between;
+      font-size: 0.8rem; color: #64748b; margin-bottom: 8px;
+    }
+    .progress-label span:last-child { color: #06b6d4; font-weight: 600; }
+    .progress-track {
+      height: 8px; background: #1a2234;
+      border-radius: 100px; overflow: hidden;
+      border: 1px solid #2d3a52;
+    }
+    .progress-fill {
+      height: 100%; width: 0%;
+      background: linear-gradient(90deg, #06b6d4, #8b5cf6);
+      border-radius: 100px;
+      transition: width 0.4s cubic-bezier(.4,0,.2,1);
+    }
+
+    /* ── Main Layout ── */
+    .main { max-width: 860px; margin: 0 auto; padding: 2.5rem 1.5rem 4rem; }
+
+    /* ── Section Cards ── */
+    .section-card {
+      background: #1a2234;
+      border: 1px solid #2d3a52;
+      border-radius: 16px;
+      padding: 2rem;
+      margin-bottom: 1.5rem;
+    }
+    .section-header {
+      display: flex; align-items: center; gap: 12px;
+      margin-bottom: 1.5rem;
+    }
+    .section-num {
+      width: 32px; height: 32px; border-radius: 8px;
+      background: linear-gradient(135deg, #06b6d4, #8b5cf6);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 0.85rem; font-weight: 800; color: #fff;
+      flex-shrink: 0;
+    }
+    .section-title { font-size: 1.1rem; font-weight: 800; color: #f1f5f9; }
+    .section-subtitle { font-size: 0.82rem; color: #64748b; margin-top: 2px; }
+
+    /* ── Form Fields ── */
+    .form-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+    }
+    @media (max-width: 600px) { .form-grid { grid-template-columns: 1fr; } }
+    .form-group { display: flex; flex-direction: column; gap: 6px; }
+    .form-group.full { grid-column: 1 / -1; }
+    label {
+      font-size: 0.8rem; font-weight: 600;
+      color: #94a3b8; letter-spacing: 0.5px; text-transform: uppercase;
+    }
+    .required { color: #f87171; margin-left: 2px; }
+    input[type=text], input[type=number], input[type=email], select {
+      background: #0a0f1e;
+      border: 1px solid #2d3a52;
+      border-radius: 10px;
+      padding: 10px 14px;
+      color: #e2e8f0;
+      font-size: 0.92rem;
+      transition: border-color 0.2s, box-shadow 0.2s;
+      width: 100%;
+      outline: none;
+    }
+    input[type=text]:focus, input[type=number]:focus,
+    input[type=email]:focus, select:focus {
+      border-color: #06b6d4;
+      box-shadow: 0 0 0 3px rgba(6,182,212,0.12);
+    }
+    select option { background: #1a2234; }
+
+    /* ── Scale Legend ── */
+    .scale-legend {
+      background: #0a0f1e; border: 1px solid #2d3a52;
+      border-radius: 12px; padding: 1.2rem 1.4rem;
+      margin-bottom: 1rem;
+    }
+    .scale-legend h4 { font-size: 0.85rem; font-weight: 700; color: #94a3b8; margin-bottom: 0.8rem; letter-spacing: 0.5px; text-transform: uppercase; }
+    .scale-items { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 0.9rem; }
+    .scale-item {
+      display: flex; align-items: center; gap: 6px;
+      font-size: 0.78rem; color: #94a3b8;
+    }
+    .scale-dot {
+      width: 22px; height: 22px; border-radius: 6px;
+      display: flex; align-items: center; justify-content: center;
+      font-weight: 800; font-size: 0.72rem;
+    }
+    .scale-bar {
+      display: flex; align-items: center; justify-content: space-between;
+      font-size: 0.75rem; color: #64748b; gap: 8px;
+      padding: 8px 12px;
+      background: linear-gradient(90deg, rgba(16,185,129,0.1) 0%, rgba(6,182,212,0.15) 50%, rgba(59,130,246,0.1) 100%);
+      border-radius: 8px; border: 1px solid #2d3a52;
+    }
+    .scale-bar span { font-weight: 600; }
+
+    /* ── Pair Cards ── */
+    .pair-card {
+      background: #0a0f1e;
+      border: 1px solid #2d3a52;
+      border-radius: 14px;
+      padding: 1.4rem;
+      margin-bottom: 1rem;
+      transition: border-color 0.2s;
+    }
+    .pair-card.done { border-color: rgba(6,182,212,0.4); }
+    .pair-header {
+      display: flex; align-items: center; justify-content: center;
+      gap: 12px; margin-bottom: 1.2rem; flex-wrap: wrap;
+    }
+    .dim-badge {
+      padding: 5px 14px; border-radius: 100px;
+      font-size: 0.82rem; font-weight: 800;
+      letter-spacing: 0.3px;
+    }
+    .dim-env  { background: rgba(16,185,129,0.15); color: #10b981; border: 1px solid rgba(16,185,129,0.3); }
+    .dim-soc  { background: rgba(59,130,246,0.15);  color: #3b82f6; border: 1px solid rgba(59,130,246,0.3); }
+    .dim-eco  { background: rgba(245,158,11,0.15);  color: #f59e0b; border: 1px solid rgba(245,158,11,0.3); }
+    .dim-gov  { background: rgba(139,92,246,0.15);  color: #8b5cf6; border: 1px solid rgba(139,92,246,0.3); }
+    .vs-label { font-size: 0.78rem; font-weight: 700; color: #475569; text-transform: uppercase; letter-spacing: 1px; }
+
+    /* ── Button Scale Row ── */
+    .scale-row {
+      display: flex; align-items: center; justify-content: center;
+      gap: 3px; flex-wrap: wrap;
+    }
+    .scale-btn {
+      width: 36px; height: 36px; border-radius: 8px;
+      border: 1px solid #2d3a52;
+      background: #1a2234;
+      color: #64748b;
+      font-size: 0.8rem; font-weight: 700;
+      transition: all 0.15s;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .scale-btn:hover { border-color: #475569; color: #e2e8f0; transform: translateY(-1px); }
+    .scale-btn.center-btn { width: 44px; height: 44px; font-size: 0.9rem; margin: 0 4px; }
+    .scale-btn.selected-left  { color: #fff; }
+    .scale-btn.selected-right { color: #fff; }
+    .scale-btn.selected-eq    { background: rgba(6,182,212,0.25); border-color: #06b6d4; color: #06b6d4; }
+    .scale-divider { width: 1px; height: 28px; background: #2d3a52; margin: 0 4px; flex-shrink: 0; }
+
+    /* per-dimension selected colours */
+    .sel-env  { background: rgba(16,185,129,0.25); border-color: #10b981; }
+    .sel-soc  { background: rgba(59,130,246,0.25);  border-color: #3b82f6; }
+    .sel-eco  { background: rgba(245,158,11,0.25);  border-color: #f59e0b; }
+    .sel-gov  { background: rgba(139,92,246,0.25);  border-color: #8b5cf6; }
+
+    /* ── Comparison Description ── */
+    .comparison-desc {
+      text-align: center; margin-top: 0.9rem;
+      font-size: 0.82rem; min-height: 20px;
+      color: #64748b; transition: color 0.2s;
+    }
+    .comparison-desc.has-value { color: #94a3b8; }
+
+    /* ── Submit Button ── */
+    .submit-wrap { text-align: center; margin-top: 1.5rem; }
+    .btn-submit {
+      padding: 16px 48px; border-radius: 12px;
+      font-size: 1rem; font-weight: 800;
+      border: none;
+      background: linear-gradient(135deg, #10b981, #06b6d4);
+      color: #fff;
+      letter-spacing: 0.3px;
+      transition: all 0.2s;
+      box-shadow: 0 4px 24px rgba(6,182,212,0.25);
+    }
+    .btn-submit:not(:disabled):hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 32px rgba(6,182,212,0.35);
+    }
+    .btn-submit:disabled {
+      opacity: 0.4; cursor: not-allowed;
+      background: #2d3a52;
+      box-shadow: none;
+    }
+    .submit-note { margin-top: 0.8rem; font-size: 0.8rem; color: #475569; }
+
+    /* ── Result Panel ── */
+    #result-panel { display: none; }
+    .result-card {
+      background: #1a2234; border: 1px solid #2d3a52;
+      border-radius: 20px; padding: 3rem 2rem;
+      text-align: center;
+    }
+    .result-icon { font-size: 3.5rem; margin-bottom: 1rem; }
+    .result-title {
+      font-size: 1.8rem; font-weight: 900;
+      background: linear-gradient(135deg, #f1f5f9, #06b6d4);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+      background-clip: text; margin-bottom: 0.5rem;
+    }
+    .result-sub { color: #64748b; margin-bottom: 2rem; font-size: 0.92rem; }
+    .cr-badge {
+      display: inline-flex; align-items: center; gap: 8px;
+      padding: 8px 20px; border-radius: 100px;
+      font-size: 0.88rem; font-weight: 700;
+      margin-bottom: 2rem;
+    }
+    .cr-good { background: rgba(16,185,129,0.15); border: 1px solid rgba(16,185,129,0.4); color: #10b981; }
+    .cr-warn { background: rgba(245,158,11,0.15); border: 1px solid rgba(245,158,11,0.4); color: #f59e0b; }
+    .weights-grid {
+      display: grid; grid-template-columns: repeat(2, 1fr);
+      gap: 1rem; margin-bottom: 2rem;
+    }
+    @media (max-width: 480px) { .weights-grid { grid-template-columns: 1fr; } }
+    .weight-card {
+      background: #0a0f1e; border: 1px solid #2d3a52;
+      border-radius: 14px; padding: 1.2rem;
+    }
+    .weight-dim { font-size: 0.78rem; font-weight: 700; margin-bottom: 0.4rem; text-transform: uppercase; letter-spacing: 0.5px; }
+    .weight-val { font-size: 1.8rem; font-weight: 900; }
+    .weight-bar-track { height: 6px; background: #2d3a52; border-radius: 100px; margin-top: 0.5rem; }
+    .weight-bar-fill { height: 100%; border-radius: 100px; }
+    .consistency-msg { color: #64748b; font-size: 0.88rem; margin-bottom: 2rem; }
+    .result-actions { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
+    .btn-home {
+      padding: 12px 28px; border-radius: 10px;
+      border: 1px solid #2d3a52; background: #0a0f1e;
+      color: #94a3b8; font-size: 0.9rem; font-weight: 600;
+      transition: all 0.2s;
+    }
+    .btn-home:hover { border-color: #475569; color: #e2e8f0; }
+    .btn-again {
+      padding: 12px 28px; border-radius: 10px;
+      border: none;
+      background: linear-gradient(135deg, #06b6d4, #8b5cf6);
+      color: #fff; font-size: 0.9rem; font-weight: 700;
+      transition: all 0.2s;
+    }
+    .btn-again:hover { opacity: 0.88; transform: translateY(-1px); }
+
+    /* ── Modal ── */
+    .modal-overlay {
+      display: none; position: fixed; inset: 0; z-index: 200;
+      background: rgba(0,0,0,0.7); backdrop-filter: blur(4px);
+      align-items: center; justify-content: center; padding: 1.5rem;
+    }
+    .modal-overlay.open { display: flex; }
+    .modal-box {
+      background: #1a2234; border: 1px solid #2d3a52;
+      border-radius: 20px; max-width: 640px; width: 100%;
+      max-height: 80vh; display: flex; flex-direction: column;
+      box-shadow: 0 24px 64px rgba(0,0,0,0.6);
+    }
+    .modal-header {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 1.5rem 1.5rem 1rem;
+      border-bottom: 1px solid #2d3a52;
+    }
+    .modal-title { font-size: 1.1rem; font-weight: 800; color: #f1f5f9; }
+    .modal-close {
+      width: 32px; height: 32px; border-radius: 8px;
+      border: 1px solid #2d3a52; background: transparent;
+      color: #64748b; font-size: 1.2rem; line-height: 1;
+      display: flex; align-items: center; justify-content: center;
+      transition: all 0.2s;
+    }
+    .modal-close:hover { background: #2d3a52; color: #e2e8f0; }
+    .modal-body { padding: 1.5rem; overflow-y: auto; flex: 1; }
+    .modal-empty { text-align: center; color: #475569; padding: 2rem 0; }
+    .response-item {
+      background: #0a0f1e; border: 1px solid #2d3a52;
+      border-radius: 12px; padding: 1rem 1.2rem; margin-bottom: 0.8rem;
+    }
+    .response-name { font-weight: 700; color: #e2e8f0; margin-bottom: 4px; }
+    .response-meta { font-size: 0.78rem; color: #64748b; }
+    .aggregate-box {
+      background: rgba(6,182,212,0.08); border: 1px solid rgba(6,182,212,0.25);
+      border-radius: 12px; padding: 1rem 1.2rem; margin-bottom: 1rem;
+    }
+    .aggregate-title { font-size: 0.78rem; font-weight: 700; color: #06b6d4; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 0.6rem; }
+    .aggregate-weights { display: flex; gap: 8px; flex-wrap: wrap; }
+    .agg-chip {
+      padding: 4px 12px; border-radius: 100px;
+      font-size: 0.78rem; font-weight: 700;
+    }
+    .tooltip {
+      font-size: 0.75rem; color: #475569; margin-top: 6px;
+    }
+
+    /* ── Pair number ── */
+    .pair-num {
+      font-size: 0.7rem; font-weight: 700; color: #475569;
+      text-transform: uppercase; letter-spacing: 1px;
+      margin-bottom: 0.75rem;
+    }
+  </style>
+</head>
+<body>
+
+<!-- ══════════ NAVBAR ══════════ -->
+<nav class="navbar">
+  <a href="index.html" class="navbar-logo">
+    <div class="logo-icon">🏗</div>
+    <span class="logo-text">Infra<span class="logo-accent">AHP</span></span>
+  </a>
+  <div class="navbar-actions">
+    <a href="index.html" class="btn-nav-home">
+      ← Back to Home
+    </a>
+    <button class="btn-saved" onclick="openModal()">
+      📋 View Saved Responses
+    </button>
+  </div>
+</nav>
+
+<!-- ══════════ HERO ══════════ -->
+<section class="hero">
+  <div class="hero-badge">📊 AHP Expert Survey</div>
+  <h1 class="hero-title">Pairwise Comparison Survey</h1>
+  <p class="hero-subtitle">
+    Your expert input will directly inform the Analytical Hierarchy Process (AHP) weighting
+    of sustainability dimensions for Indian infrastructure projects.
+    This survey takes approximately 5–10 minutes.
+  </p>
+  <div class="progress-wrap">
+    <div class="progress-label">
+      <span>Survey Progress</span>
+      <span id="progress-text">0 of 6 comparisons completed</span>
+    </div>
+    <div class="progress-track">
+      <div class="progress-fill" id="progress-fill"></div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════ MAIN ══════════ -->
+<main class="main">
+
+  <!-- ── FORM ── -->
+  <form id="survey-form" novalidate>
+
+    <!-- SECTION 1: Expert Info -->
+    <div class="section-card">
+      <div class="section-header">
+        <div class="section-num">1</div>
+        <div>
+          <div class="section-title">Expert Information</div>
+          <div class="section-subtitle">Please provide your professional details</div>
+        </div>
+      </div>
+      <div class="form-grid">
+        <div class="form-group">
+          <label>Full Name <span class="required">*</span></label>
+          <input type="text" id="f-name" placeholder="Dr. Rajesh Kumar" required />
+        </div>
+        <div class="form-group">
+          <label>Organisation <span class="required">*</span></label>
+          <input type="text" id="f-org" placeholder="NITI Aayog / IIT Delhi..." required />
+        </div>
+        <div class="form-group">
+          <label>Years of Experience <span class="required">*</span></label>
+          <input type="number" id="f-exp" placeholder="e.g. 15" min="0" max="60" required />
+        </div>
+        <div class="form-group">
+          <label>Primary Domain <span class="required">*</span></label>
+          <select id="f-domain" required>
+            <option value="">— Select domain —</option>
+            <option>Civil / Structural</option>
+            <option>Environmental</option>
+            <option>Transportation</option>
+            <option>Urban Planning</option>
+            <option>Government / Policy</option>
+            <option>Finance</option>
+            <option>Other</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Project Type Expertise <span class="required">*</span></label>
+          <select id="f-project" required>
+            <option value="">— Select type —</option>
+            <option>Rural / National Highway</option>
+            <option>Urban Metro</option>
+            <option>Railway</option>
+            <option>Bridges</option>
+            <option>Ports</option>
+            <option>Multiple</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Email <span style="color:#475569;font-weight:400">(optional)</span></label>
+          <input type="email" id="f-email" placeholder="expert@example.com" />
+        </div>
+      </div>
+    </div>
+
+    <!-- SECTION 2: Instructions -->
+    <div class="section-card">
+      <div class="section-header">
+        <div class="section-num">2</div>
+        <div>
+          <div class="section-title">How to Answer</div>
+          <div class="section-subtitle">Saaty's 1–9 Pairwise Comparison Scale</div>
+        </div>
+      </div>
+      <p style="color:#94a3b8;font-size:0.9rem;margin-bottom:1rem;">
+        For each pair of sustainability dimensions, indicate <strong style="color:#e2e8f0">which is more important</strong>
+        and by <strong style="color:#e2e8f0">how much</strong>, from the perspective of Indian infrastructure project evaluation.
+      </p>
+      <div class="scale-legend">
+        <h4>Intensity of Importance</h4>
+        <div class="scale-items">
+          <div class="scale-item">
+            <div class="scale-dot" style="background:rgba(6,182,212,0.2);color:#06b6d4">1</div>
+            <span>Equal importance</span>
+          </div>
+          <div class="scale-item">
+            <div class="scale-dot" style="background:rgba(6,182,212,0.12);color:#94a3b8">2</div>
+            <span>Equally to moderately</span>
+          </div>
+          <div class="scale-item">
+            <div class="scale-dot" style="background:rgba(6,182,212,0.12);color:#94a3b8">3</div>
+            <span>Moderately more important</span>
+          </div>
+          <div class="scale-item">
+            <div class="scale-dot" style="background:rgba(6,182,212,0.12);color:#94a3b8">4</div>
+            <span>Moderately to strongly</span>
+          </div>
+          <div class="scale-item">
+            <div class="scale-dot" style="background:rgba(6,182,212,0.12);color:#94a3b8">5</div>
+            <span>Strongly more important</span>
+          </div>
+          <div class="scale-item">
+            <div class="scale-dot" style="background:rgba(6,182,212,0.12);color:#94a3b8">6</div>
+            <span>Strongly to very strongly</span>
+          </div>
+          <div class="scale-item">
+            <div class="scale-dot" style="background:rgba(6,182,212,0.12);color:#94a3b8">7</div>
+            <span>Very strongly more important</span>
+          </div>
+          <div class="scale-item">
+            <div class="scale-dot" style="background:rgba(6,182,212,0.12);color:#94a3b8">8</div>
+            <span>Very strongly to absolutely</span>
+          </div>
+          <div class="scale-item">
+            <div class="scale-dot" style="background:rgba(6,182,212,0.12);color:#94a3b8">9</div>
+            <span>Absolutely more important</span>
+          </div>
+        </div>
+        <div class="scale-bar">
+          <span>9 ← Absolute left</span>
+          <span style="color:#94a3b8">8 · 7 · 6 · 5 · 4 · 3 · 2</span>
+          <span style="color:#06b6d4">Equal = 1</span>
+          <span style="color:#94a3b8">2 · 3 · 4 · 5 · 6 · 7 · 8</span>
+          <span>Absolute right → 9</span>
+        </div>
+      </div>
+      <p style="color:#64748b;font-size:0.82rem;">
+        <strong style="color:#94a3b8">How to read the scale:</strong>
+        Clicking a number on the <em>left</em> means the left dimension is that many times more important.
+        Clicking a number on the <em>right</em> means the right dimension is more important.
+        Click <strong style="color:#06b6d4">1 (EQUAL)</strong> if both are equally important.
+      </p>
+    </div>
+
+    <!-- SECTION 3: Pairwise Comparisons (injected by JS) -->
+    <div class="section-card">
+      <div class="section-header">
+        <div class="section-num">3</div>
+        <div>
+          <div class="section-title">Pairwise Comparisons</div>
+          <div class="section-subtitle">Complete all 6 comparisons to enable submission</div>
+        </div>
+      </div>
+      <div id="pairs-container"></div>
+    </div>
+
+    <!-- Submit -->
+    <div class="submit-wrap">
+      <button type="submit" id="btn-submit" class="btn-submit" disabled>
+        Submit My Comparisons →
+      </button>
+      <p class="submit-note" id="submit-note">Complete all 6 comparisons to submit</p>
+    </div>
+
+  </form>
+
+  <!-- ── RESULT PANEL ── -->
+  <div id="result-panel">
+    <div class="result-card">
+      <div class="result-icon">🎉</div>
+      <div class="result-title">Thank You for Your Response!</div>
+      <p class="result-sub" id="res-sub">Your expert input has been saved to this device.</p>
+
+      <div id="cr-badge"></div>
+
+      <div class="weights-grid" id="weights-grid"></div>
+
+      <p class="consistency-msg" id="consistency-msg"></p>
+
+      <div class="result-actions">
+        <a href="index.html" class="btn-home">← Back to Home</a>
+        <button class="btn-again" onclick="location.reload()">Submit Another Response</button>
+      </div>
+    </div>
+  </div>
+
+</main>
+
+<!-- ══════════ MODAL ══════════ -->
+<div class="modal-overlay" id="saved-modal">
+  <div class="modal-box">
+    <div class="modal-header">
+      <span class="modal-title">📋 Saved Expert Responses</span>
+      <button class="modal-close" onclick="closeModal()">✕</button>
+    </div>
+    <div class="modal-body" id="modal-body">
+      <div class="modal-empty">No responses saved yet.</div>
+    </div>
+  </div>
+</div>
+
+<script>
+  /* ═══════════════════════════════════════════════
+     CONFIGURATION
+  ═══════════════════════════════════════════════ */
+  const DIMS = [
+    { id: 'env', label: 'Environmental', cls: 'dim-env', selCls: 'sel-env', color: '#10b981', barColor: '#10b981' },
+    { id: 'soc', label: 'Social',        cls: 'dim-soc', selCls: 'sel-soc', color: '#3b82f6', barColor: '#3b82f6' },
+    { id: 'eco', label: 'Economic',      cls: 'dim-eco', selCls: 'sel-eco', color: '#f59e0b', barColor: '#f59e0b' },
+    { id: 'gov', label: 'Governance',    cls: 'dim-gov', selCls: 'sel-gov', color: '#8b5cf6', barColor: '#8b5cf6' },
+  ];
+
+  const PAIRS = [
+    { key: '01', i: 0, j: 1 },
+    { key: '02', i: 0, j: 2 },
+    { key: '03', i: 0, j: 3 },
+    { key: '12', i: 1, j: 2 },
+    { key: '13', i: 1, j: 3 },
+    { key: '23', i: 2, j: 3 },
+  ];
+
+  const SCALE_LABELS = {
+    9: 'Absolutely more important',
+    8: 'Very strongly to absolutely',
+    7: 'Very strongly more important',
+    6: 'Strongly to very strongly',
+    5: 'Strongly more important',
+    4: 'Moderately to strongly',
+    3: 'Moderately more important',
+    2: 'Equally to moderately',
+    1: 'Equally important',
+  };
+
+  /* ═══════════════════════════════════════════════
+     STATE
+  ═══════════════════════════════════════════════ */
+  // selections[key] = { side: 'left'|'right'|'equal', val: 1..9 }
+  const selections = {};
+
+  /* ═══════════════════════════════════════════════
+     BUILD PAIR UI
+  ═══════════════════════════════════════════════ */
+  function buildPairs() {
+    const container = document.getElementById('pairs-container');
+    container.innerHTML = '';
+
+    PAIRS.forEach((pair, idx) => {
+      const left  = DIMS[pair.i];
+      const right = DIMS[pair.j];
+
+      const card = document.createElement('div');
+      card.className = 'pair-card';
+      card.id = 'pair-card-' + pair.key;
+
+      // Build 9→2 left buttons
+      let leftBtns = '';
+      for (let v = 9; v >= 2; v--) {
+        leftBtns += `<button type="button" class="scale-btn" data-key="${pair.key}" data-side="left" data-val="${v}" title="${SCALE_LABELS[v]}">${v}</button>`;
+      }
+
+      // Center button
+      const centerBtn = `<button type="button" class="scale-btn center-btn" data-key="${pair.key}" data-side="equal" data-val="1" title="Equal importance">1<br><span style="font-size:0.55rem;font-weight:600;letter-spacing:0.5px">EQUAL</span></button>`;
+
+      // Build 2→9 right buttons
+      let rightBtns = '';
+      for (let v = 2; v <= 9; v++) {
+        rightBtns += `<button type="button" class="scale-btn" data-key="${pair.key}" data-side="right" data-val="${v}" title="${SCALE_LABELS[v]}">${v}</button>`;
+      }
+
+      card.innerHTML = `
+        <div class="pair-num">Comparison ${idx + 1} of 6</div>
+        <div class="pair-header">
+          <span class="dim-badge ${left.cls}">${left.label}</span>
+          <span class="vs-label">vs</span>
+          <span class="dim-badge ${right.cls}">${right.label}</span>
+        </div>
+        <div class="scale-row">
+          ${leftBtns}
+          <div class="scale-divider"></div>
+          ${centerBtn}
+          <div class="scale-divider"></div>
+          ${rightBtns}
+        </div>
+        <div class="comparison-desc" id="desc-${pair.key}">Select a value above to record your judgment</div>
+      `;
+
+      container.appendChild(card);
+    });
+
+    // Attach click handlers
+    document.querySelectorAll('.scale-btn').forEach(btn => {
+      btn.addEventListener('click', handleScaleClick);
+    });
+  }
+
+  /* ═══════════════════════════════════════════════
+     HANDLE SCALE CLICK
+  ═══════════════════════════════════════════════ */
+  function handleScaleClick(e) {
+    const btn = e.currentTarget;
+    const key  = btn.dataset.key;
+    const side = btn.dataset.side;
+    const val  = parseInt(btn.dataset.val);
+    const pairIdx = PAIRS.findIndex(p => p.key === key);
+    const pair = PAIRS[pairIdx];
+    const left  = DIMS[pair.i];
+    const right = DIMS[pair.j];
+
+    // Save selection
+    selections[key] = { side, val };
+
+    // Deselect all buttons in this pair
+    document.querySelectorAll(`.scale-btn[data-key="${key}"]`).forEach(b => {
+      b.classList.remove('selected-left', 'selected-right', 'selected-eq',
+        'sel-env','sel-soc','sel-eco','sel-gov');
+    });
+
+    // Style selected button
+    if (side === 'equal') {
+      btn.classList.add('selected-eq');
+    } else if (side === 'left') {
+      btn.classList.add('selected-left', left.selCls);
+    } else {
+      btn.classList.add('selected-right', right.selCls);
+    }
+
+    // Update description
+    const descEl = document.getElementById('desc-' + key);
+    descEl.classList.add('has-value');
+    if (side === 'equal') {
+      descEl.textContent = `${left.label} and ${right.label} are equally important`;
+    } else if (side === 'left') {
+      descEl.textContent = `${left.label} is ${val}× — ${SCALE_LABELS[val].toLowerCase()} — compared to ${right.label}`;
+    } else {
+      descEl.textContent = `${right.label} is ${val}× — ${SCALE_LABELS[val].toLowerCase()} — compared to ${left.label}`;
+    }
+
+    // Mark card done
+    document.getElementById('pair-card-' + key).classList.add('done');
+
+    updateProgress();
+  }
+
+  /* ═══════════════════════════════════════════════
+     PROGRESS
+  ═══════════════════════════════════════════════ */
+  function updateProgress() {
+    const done = Object.keys(selections).length;
+    const total = PAIRS.length;
+    const pct = (done / total) * 100;
+
+    document.getElementById('progress-fill').style.width = pct + '%';
+    document.getElementById('progress-text').textContent = `${done} of ${total} comparisons completed`;
+
+    const submitBtn = document.getElementById('btn-submit');
+    const submitNote = document.getElementById('submit-note');
+    if (done === total) {
+      submitBtn.disabled = false;
+      submitNote.textContent = 'All comparisons complete — ready to submit!';
+      submitNote.style.color = '#10b981';
+    } else {
+      submitBtn.disabled = true;
+      submitNote.textContent = `Complete ${total - done} more comparison${total - done > 1 ? 's' : ''} to submit`;
+      submitNote.style.color = '#475569';
+    }
+  }
+
+  /* ═══════════════════════════════════════════════
+     AHP CALCULATION
+  ═══════════════════════════════════════════════ */
+  function buildMatrix(sels, n) {
+    const M = Array.from({length: n}, () => Array(n).fill(1));
+    const pairDefs = [[0,1],[0,2],[0,3],[1,2],[1,3],[2,3]];
+    const keys = ['01','02','03','12','13','23'];
+
+    keys.forEach((key, idx) => {
+      const [i, j] = pairDefs[idx];
+      const sel = sels[key];
+      if (!sel) return;
+      const { side, val } = sel;
+      if (side === 'equal') {
+        M[i][j] = 1; M[j][i] = 1;
+      } else if (side === 'left') {
+        M[i][j] = val; M[j][i] = 1 / val;
+      } else { // right
+        M[i][j] = 1 / val; M[j][i] = val;
+      }
+    });
+    return M;
+  }
+
+  function calculateAHP(M) {
+    const n = M.length;
+    // Column sums
+    const colSums = Array(n).fill(0);
+    for (let j = 0; j < n; j++)
+      for (let i = 0; i < n; i++)
+        colSums[j] += M[i][j];
+
+    // Normalize
+    const norm = M.map(row => row.map((val, j) => val / colSums[j]));
+
+    // Priority vector (row averages)
+    const weights = norm.map(row => row.reduce((a, b) => a + b, 0) / n);
+
+    // Weighted sum vector
+    const wSum = Array(n).fill(0);
+    for (let i = 0; i < n; i++)
+      for (let j = 0; j < n; j++)
+        wSum[i] += M[i][j] * weights[j];
+
+    // Lambda max
+    const lambdaMax = wSum.reduce((sum, ws, i) => sum + ws / weights[i], 0) / n;
+
+    const CI = (lambdaMax - n) / (n - 1);
+    const RI = 0.90; // n=4
+    const CR = CI / RI;
+
+    return { weights, lambdaMax, CI, CR };
+  }
+
+  /* ═══════════════════════════════════════════════
+     FORM SUBMIT
+  ═══════════════════════════════════════════════ */
+  document.getElementById('survey-form').addEventListener('submit', function(e) {
+    e.preventDefault();
+
+    // Validate expert fields
+    const name    = document.getElementById('f-name').value.trim();
+    const org     = document.getElementById('f-org').value.trim();
+    const exp     = document.getElementById('f-exp').value.trim();
+    const domain  = document.getElementById('f-domain').value;
+    const project = document.getElementById('f-project').value;
+    const email   = document.getElementById('f-email').value.trim();
+
+    if (!name || !org || !exp || !domain || !project) {
+      alert('Please fill in all required Expert Information fields before submitting.');
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+      return;
+    }
+
+    // Build matrix & calculate
+    const M = buildMatrix(selections, 4);
+    const { weights, lambdaMax, CI, CR } = calculateAHP(M);
+    const consistent = CR < 0.10;
+
+    // Build result object
+    const responseObj = {
+      expert: { name, org, exp: parseInt(exp), domain, project, email },
+      selections: { ...selections },
+      weights: {
+        Environmental: weights[0],
+        Social: weights[1],
+        Economic: weights[2],
+        Governance: weights[3],
+      },
+      lambdaMax, CI, CR, consistent,
+      timestamp: new Date().toISOString(),
+    };
+
+    // Save to localStorage
+    const key = 'ahp_responses';
+    const existing = JSON.parse(localStorage.getItem(key) || '[]');
+    existing.push(responseObj);
+    localStorage.setItem(key, JSON.stringify(existing));
+
+    // Show results
+    showResult(responseObj, weights, CR, consistent);
+  });
+
+  /* ═══════════════════════════════════════════════
+     SHOW RESULT
+  ═══════════════════════════════════════════════ */
+  function showResult(resp, weights, CR, consistent) {
+    document.getElementById('survey-form').style.display = 'none';
+    const panel = document.getElementById('result-panel');
+    panel.style.display = 'block';
+
+    // CR badge
+    const crBadge = document.getElementById('cr-badge');
+    crBadge.innerHTML = consistent
+      ? `<div class="cr-badge cr-good">✓ Consistency Ratio: ${(CR * 100).toFixed(1)}% — Acceptable (&lt; 10%)</div>`
+      : `<div class="cr-badge cr-warn">⚠ Consistency Ratio: ${(CR * 100).toFixed(1)}% — Marginally inconsistent (&ge; 10%)</div>`;
+
+    // Weights grid
+    const wGrid = document.getElementById('weights-grid');
+    wGrid.innerHTML = '';
+    DIMS.forEach((dim, idx) => {
+      const pct = (weights[idx] * 100).toFixed(1);
+      const card = document.createElement('div');
+      card.className = 'weight-card';
+      card.innerHTML = `
+        <div class="weight-dim" style="color:${dim.color}">${dim.label}</div>
+        <div class="weight-val" style="color:${dim.color}">${pct}%</div>
+        <div class="weight-bar-track">
+          <div class="weight-bar-fill" style="width:${pct}%;background:${dim.barColor}"></div>
+        </div>
+      `;
+      wGrid.appendChild(card);
+    });
+
+    // Consistency message
+    const cMsg = document.getElementById('consistency-msg');
+    if (consistent) {
+      cMsg.textContent = `Excellent! Your judgments are consistent. A CR of ${(CR * 100).toFixed(1)}% is well within the acceptable threshold of 10%.`;
+    } else {
+      cMsg.textContent = `Your CR of ${(CR * 100).toFixed(1)}% slightly exceeds the 10% threshold, but your response has been saved. Results may be used with caution.`;
+    }
+
+    panel.scrollIntoView({ behavior: 'smooth' });
+  }
+
+  /* ═══════════════════════════════════════════════
+     MODAL — SAVED RESPONSES
+  ═══════════════════════════════════════════════ */
+  function openModal() {
+    const modal = document.getElementById('saved-modal');
+    modal.classList.add('open');
+    renderModal();
+  }
+
+  function closeModal() {
+    document.getElementById('saved-modal').classList.remove('open');
+  }
+
+  document.getElementById('saved-modal').addEventListener('click', function(e) {
+    if (e.target === this) closeModal();
+  });
+
+  function renderModal() {
+    const body = document.getElementById('modal-body');
+    const stored = JSON.parse(localStorage.getItem('ahp_responses') || '[]');
+
+    if (stored.length === 0) {
+      body.innerHTML = '<div class="modal-empty">📭 No responses saved yet.<br><span style="font-size:0.8rem;color:#475569">Completed surveys will appear here.</span></div>';
+      return;
+    }
+
+    let html = '';
+
+    // Aggregate weights if >1 response
+    if (stored.length > 1) {
+      const aggW = [0, 0, 0, 0];
+      const dimKeys = ['Environmental', 'Social', 'Economic', 'Governance'];
+      stored.forEach(r => {
+        dimKeys.forEach((k, i) => { aggW[i] += r.weights[k] || 0; });
+      });
+      aggW.forEach((_, i) => { aggW[i] /= stored.length; });
+
+      html += `<div class="aggregate-box">
+        <div class="aggregate-title">📊 Aggregate Weights (${stored.length} experts, simple average)</div>
+        <div class="aggregate-weights">
+          ${DIMS.map((d, i) => `<span class="agg-chip" style="background:rgba(0,0,0,0.3);border:1px solid ${d.color};color:${d.color}">${d.label}: ${(aggW[i]*100).toFixed(1)}%</span>`).join('')}
+        </div>
+      </div>`;
+    }
+
+    html += `<div style="font-size:0.78rem;color:#475569;margin-bottom:0.8rem;">${stored.length} response${stored.length > 1 ? 's' : ''} stored on this device</div>`;
+
+    stored.slice().reverse().forEach((r, idx) => {
+      const ts = new Date(r.timestamp).toLocaleString('en-IN', { dateStyle: 'medium', timeStyle: 'short' });
+      const crColor = r.CR < 0.10 ? '#10b981' : '#f59e0b';
+      const dimKeys = ['Environmental', 'Social', 'Economic', 'Governance'];
+      html += `<div class="response-item">
+        <div class="response-name">${r.expert.name}</div>
+        <div class="response-meta" style="margin-bottom:6px">
+          ${r.expert.org} · ${r.expert.domain} · ${r.expert.exp} yrs
+          &nbsp;·&nbsp; <span style="color:${crColor}">CR: ${(r.CR*100).toFixed(1)}%</span>
+          &nbsp;·&nbsp; ${ts}
+        </div>
+        <div style="display:flex;gap:6px;flex-wrap:wrap">
+          ${DIMS.map((d, i) => `<span style="font-size:0.72rem;padding:2px 10px;border-radius:100px;background:rgba(0,0,0,0.3);border:1px solid ${d.color};color:${d.color}">${d.label}: ${((r.weights[dimKeys[i]]||0)*100).toFixed(1)}%</span>`).join('')}
+        </div>
+      </div>`;
+    });
+
+    html += `<div style="text-align:center;margin-top:1rem">
+      <button onclick="clearResponses()" style="font-size:0.78rem;color:#f87171;background:transparent;border:1px solid rgba(248,113,113,0.3);padding:6px 14px;border-radius:8px;cursor:pointer;">
+        🗑 Clear All Saved Responses
+      </button>
+    </div>`;
+
+    body.innerHTML = html;
+  }
+
+  function clearResponses() {
+    if (confirm('Are you sure you want to delete all saved responses? This cannot be undone.')) {
+      localStorage.removeItem('ahp_responses');
+      renderModal();
+    }
+  }
+
+  /* ═══════════════════════════════════════════════
+     INIT
+  ═══════════════════════════════════════════════ */
+  buildPairs();
+  updateProgress();
+</script>
+</body>
+</html>

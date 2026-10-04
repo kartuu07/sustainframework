@@ -1,0 +1,983 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SRF Infrastructure — Sustainability Rating Framework</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+  <style>
+    /* ===== RESET & BASE ===== */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; font-size: 16px; }
+    body {
+      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+      background: #0a0f1e;
+      color: #e2e8f0;
+      line-height: 1.6;
+      overflow-x: hidden;
+    }
+    a { text-decoration: none; color: inherit; }
+    img { max-width: 100%; }
+
+    /* ===== CSS VARIABLES ===== */
+    :root {
+      --bg: #0a0f1e;
+      --card: #1a2234;
+      --border: #2d3a52;
+      --env: #10b981;
+      --soc: #3b82f6;
+      --eco: #f59e0b;
+      --gov: #8b5cf6;
+      --accent: #06b6d4;
+      --text: #e2e8f0;
+      --muted: #94a3b8;
+      --nav-h: 68px;
+    }
+
+    /* ===== SCROLLBAR ===== */
+    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar-track { background: var(--bg); }
+    ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+
+    /* ===== NAVBAR ===== */
+    .navbar {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 1000;
+      height: var(--nav-h);
+      display: flex; align-items: center;
+      padding: 0 2rem;
+      border-bottom: 1px solid transparent;
+      transition: background 0.3s, border-color 0.3s, backdrop-filter 0.3s;
+    }
+    .navbar.scrolled {
+      background: rgba(10,15,30,0.92);
+      backdrop-filter: blur(12px);
+      border-bottom-color: var(--border);
+    }
+    .nav-inner {
+      width: 100%; max-width: 1200px; margin: 0 auto;
+      display: flex; align-items: center; gap: 2rem;
+    }
+    .nav-logo {
+      font-size: 1.15rem; font-weight: 700; color: var(--accent);
+      white-space: nowrap; flex-shrink: 0;
+    }
+    .nav-links {
+      display: flex; align-items: center; gap: 1.5rem;
+      list-style: none; flex: 1;
+    }
+    .nav-links a {
+      font-size: 0.9rem; color: var(--muted); transition: color 0.2s;
+    }
+    .nav-links a:hover { color: var(--text); }
+    .nav-cta {
+      padding: 0.5rem 1.2rem;
+      background: linear-gradient(135deg, var(--accent), var(--soc));
+      border-radius: 6px; font-size: 0.85rem; font-weight: 600;
+      color: #fff; white-space: nowrap; transition: opacity 0.2s;
+      flex-shrink: 0;
+    }
+    .nav-cta:hover { opacity: 0.88; }
+
+    /* ===== HERO ===== */
+    .hero {
+      min-height: 100vh;
+      display: flex; align-items: center; justify-content: center;
+      position: relative; overflow: hidden;
+      padding: calc(var(--nav-h) + 3rem) 2rem 4rem;
+      text-align: center;
+    }
+    .hero-bg {
+      position: absolute; inset: 0; z-index: 0;
+      background:
+        radial-gradient(ellipse 80% 60% at 20% 30%, rgba(6,182,212,0.12) 0%, transparent 60%),
+        radial-gradient(ellipse 60% 50% at 80% 70%, rgba(139,92,246,0.1) 0%, transparent 55%),
+        radial-gradient(ellipse 50% 40% at 50% 10%, rgba(16,185,129,0.08) 0%, transparent 50%);
+    }
+    .hero-grid {
+      position: absolute; inset: 0; z-index: 0;
+      background-image:
+        linear-gradient(rgba(45,58,82,0.25) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(45,58,82,0.25) 1px, transparent 1px);
+      background-size: 48px 48px;
+    }
+    .hero-content { position: relative; z-index: 1; max-width: 860px; }
+    .hero-badge {
+      display: inline-block; margin-bottom: 1.5rem;
+      padding: 0.35rem 1rem;
+      background: rgba(6,182,212,0.12); border: 1px solid rgba(6,182,212,0.3);
+      border-radius: 20px; font-size: 0.8rem; color: var(--accent); letter-spacing: 0.05em; text-transform: uppercase;
+    }
+    .hero h1 {
+      font-size: clamp(1.6rem, 4vw, 2.8rem);
+      font-weight: 800; line-height: 1.22;
+      background: linear-gradient(135deg, #fff 30%, var(--accent) 100%);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+      background-clip: text; margin-bottom: 1.25rem;
+    }
+    .hero p {
+      font-size: clamp(0.95rem, 2vw, 1.15rem); color: var(--muted);
+      max-width: 640px; margin: 0 auto 2rem;
+    }
+    .hero-buttons { display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap; margin-bottom: 3rem; }
+    .btn-primary {
+      padding: 0.75rem 1.75rem;
+      background: linear-gradient(135deg, var(--accent), var(--soc));
+      border-radius: 8px; font-weight: 700; font-size: 0.95rem; color: #fff;
+      transition: transform 0.2s, opacity 0.2s;
+    }
+    .btn-primary:hover { transform: translateY(-2px); opacity: 0.9; }
+    .btn-outline {
+      padding: 0.75rem 1.75rem;
+      border: 1.5px solid var(--border); border-radius: 8px;
+      font-weight: 600; font-size: 0.95rem; color: var(--text);
+      transition: border-color 0.2s, background 0.2s;
+    }
+    .btn-outline:hover { border-color: var(--accent); background: rgba(6,182,212,0.08); }
+    .hero-stats {
+      display: flex; gap: 2.5rem; justify-content: center; flex-wrap: wrap;
+    }
+    .hero-stat { text-align: center; }
+    .hero-stat .num { font-size: 2rem; font-weight: 800; color: var(--accent); display: block; }
+    .hero-stat .lbl { font-size: 0.8rem; color: var(--muted); }
+
+    /* ===== SECTION COMMON ===== */
+    section { padding: 5rem 2rem; }
+    .section-inner { max-width: 1200px; margin: 0 auto; }
+    .section-badge {
+      display: inline-block; margin-bottom: 1rem;
+      padding: 0.3rem 0.9rem;
+      background: rgba(6,182,212,0.1); border: 1px solid rgba(6,182,212,0.25);
+      border-radius: 20px; font-size: 0.75rem; color: var(--accent);
+      letter-spacing: 0.07em; text-transform: uppercase;
+    }
+    .section-title {
+      font-size: clamp(1.5rem, 3vw, 2.1rem); font-weight: 800;
+      margin-bottom: 0.6rem; color: var(--text);
+    }
+    .section-sub { color: var(--muted); max-width: 560px; margin-bottom: 3rem; }
+
+    /* fade-in animation */
+    .fade-in {
+      opacity: 0; transform: translateY(28px);
+      transition: opacity 0.6s ease, transform 0.6s ease;
+    }
+    .fade-in.visible { opacity: 1; transform: none; }
+
+    /* ===== ABOUT ===== */
+    #about { background: rgba(26,34,52,0.35); }
+    .about-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 3rem; align-items: start; }
+    .about-problem h3 { font-size: 1.25rem; font-weight: 700; margin-bottom: 1.2rem; color: var(--text); }
+    .about-problem ul { list-style: none; display: flex; flex-direction: column; gap: 0.85rem; }
+    .about-problem ul li {
+      display: flex; gap: 0.75rem; align-items: flex-start;
+      padding: 0.9rem 1.1rem;
+      background: var(--card); border: 1px solid var(--border); border-radius: 8px;
+      font-size: 0.9rem; color: var(--muted);
+    }
+    .about-problem ul li::before { content: '⚠️'; flex-shrink: 0; margin-top: 1px; }
+    .about-solution { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 1.75rem; }
+    .about-solution h3 { font-size: 1.1rem; font-weight: 700; margin-bottom: 1.5rem; color: var(--accent); }
+    .solution-stats { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+    .sol-stat {
+      padding: 1rem; border-radius: 8px; text-align: center;
+    }
+    .sol-stat .s-num { font-size: 1.8rem; font-weight: 800; display: block; }
+    .sol-stat .s-lbl { font-size: 0.78rem; color: var(--muted); }
+    .sol-env { background: rgba(16,185,129,0.1); border: 1px solid rgba(16,185,129,0.25); }
+    .sol-env .s-num { color: var(--env); }
+    .sol-soc { background: rgba(59,130,246,0.1); border: 1px solid rgba(59,130,246,0.25); }
+    .sol-soc .s-num { color: var(--soc); }
+    .sol-eco { background: rgba(245,158,11,0.1); border: 1px solid rgba(245,158,11,0.25); }
+    .sol-eco .s-num { color: var(--eco); }
+    .sol-gov { background: rgba(139,92,246,0.1); border: 1px solid rgba(139,92,246,0.25); }
+    .sol-gov .s-num { color: var(--gov); }
+
+    /* ===== OBJECTIVES ===== */
+    .obj-grid { display: grid; grid-template-columns: repeat(4,1fr); gap: 1.5rem; }
+    .obj-card {
+      background: var(--card); border: 1px solid var(--border); border-radius: 12px;
+      padding: 1.5rem; border-top-width: 3px;
+    }
+    .obj-card-env { border-top-color: var(--env); }
+    .obj-card-soc { border-top-color: var(--soc); }
+    .obj-card-eco { border-top-color: var(--eco); }
+    .obj-card-gov { border-top-color: var(--gov); }
+    .obj-icon { font-size: 1.6rem; margin-bottom: 0.75rem; }
+    .obj-card h4 { font-size: 1rem; font-weight: 700; margin-bottom: 0.5rem; }
+    .obj-card p { font-size: 0.85rem; color: var(--muted); }
+
+    /* ===== FRAMEWORK ===== */
+    #architecture { background: rgba(26,34,52,0.35); }
+    .fw-levels { display: flex; flex-direction: column; gap: 1.5rem; }
+    .fw-level { display: flex; align-items: center; gap: 1rem; }
+    .fw-level-label {
+      width: 90px; flex-shrink: 0;
+      font-size: 0.72rem; color: var(--muted); text-align: right;
+      text-transform: uppercase; letter-spacing: 0.06em;
+    }
+    .fw-level-content { flex: 1; display: flex; gap: 1rem; flex-wrap: wrap; }
+    .fw-goal {
+      padding: 0.85rem 2rem; border-radius: 30px;
+      background: rgba(6,182,212,0.12); border: 1.5px solid var(--accent);
+      color: var(--accent); font-weight: 700; font-size: 0.95rem;
+    }
+    .fw-dim {
+      flex: 1; min-width: 160px; padding: 1rem;
+      border-radius: 10px; border: 1.5px solid;
+      font-weight: 700; font-size: 0.9rem; text-align: center;
+    }
+    .fw-dim-env { background: rgba(16,185,129,0.1); border-color: var(--env); color: var(--env); }
+    .fw-dim-soc { background: rgba(59,130,246,0.1); border-color: var(--soc); color: var(--soc); }
+    .fw-dim-eco { background: rgba(245,158,11,0.1); border-color: var(--eco); color: var(--eco); }
+    .fw-dim-gov { background: rgba(139,92,246,0.1); border-color: var(--gov); color: var(--gov); }
+    .fw-dim span { display: block; font-size: 0.78rem; color: var(--muted); font-weight: 400; margin-top: 0.25rem; }
+    .fw-cats {
+      flex: 1; min-width: 140px;
+      display: flex; flex-direction: column; gap: 0.4rem;
+    }
+    .fw-cat {
+      padding: 0.4rem 0.7rem; border-radius: 6px;
+      font-size: 0.78rem; background: var(--card); border: 1px solid var(--border);
+      color: var(--muted);
+    }
+    .fw-sub {
+      flex: 1; min-width: 100px;
+      display: flex; align-items: center; justify-content: center;
+      padding: 0.75rem; border-radius: 8px;
+      background: rgba(6,182,212,0.06); border: 1px dashed var(--border);
+      font-size: 0.78rem; color: var(--muted); text-align: center;
+    }
+    .fw-connector {
+      width: 1px; height: 28px; background: var(--border);
+      margin: 0 auto;
+    }
+
+    /* ===== METHODOLOGY ===== */
+    .meth-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 1.5rem; }
+    .meth-card {
+      background: var(--card); border: 1px solid var(--border); border-radius: 12px;
+      padding: 1.5rem; position: relative; overflow: hidden;
+      transition: border-color 0.25s, transform 0.25s;
+    }
+    .meth-card:hover { border-color: var(--accent); transform: translateY(-3px); }
+    .meth-step-num {
+      position: absolute; top: 1rem; right: 1rem;
+      font-size: 2rem; font-weight: 900; color: rgba(255,255,255,0.04);
+    }
+    .meth-icon { font-size: 1.8rem; margin-bottom: 0.75rem; }
+    .meth-card h4 { font-size: 1rem; font-weight: 700; margin-bottom: 0.4rem; color: var(--text); }
+    .meth-card p { font-size: 0.85rem; color: var(--muted); }
+    .meth-card .step-label {
+      display: inline-block; padding: 0.15rem 0.55rem;
+      background: rgba(6,182,212,0.1); border: 1px solid rgba(6,182,212,0.2);
+      border-radius: 4px; font-size: 0.7rem; color: var(--accent);
+      margin-bottom: 0.6rem;
+    }
+
+    /* ===== RESULTS ===== */
+    #results { background: rgba(26,34,52,0.35); }
+    .results-stats { display: flex; gap: 2rem; flex-wrap: wrap; margin-bottom: 2.5rem; }
+    .r-stat {
+      flex: 1; min-width: 140px; padding: 1.25rem;
+      background: var(--card); border: 1px solid var(--border); border-radius: 10px;
+      text-align: center;
+    }
+    .r-stat .r-num { font-size: 1.8rem; font-weight: 800; color: var(--accent); display: block; }
+    .r-stat .r-lbl { font-size: 0.78rem; color: var(--muted); }
+    .results-main { display: grid; grid-template-columns: 1fr 1.2fr; gap: 2.5rem; align-items: start; margin-bottom: 2.5rem; }
+    .chart-wrap { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 1.75rem; }
+    .chart-wrap h4 { font-size: 1rem; font-weight: 700; margin-bottom: 1.25rem; color: var(--text); }
+    .chart-canvas-wrap { max-width: 280px; margin: 0 auto; }
+    .chart-legend { display: flex; flex-wrap: wrap; gap: 0.75rem; margin-top: 1rem; justify-content: center; }
+    .legend-item { display: flex; align-items: center; gap: 0.4rem; font-size: 0.8rem; color: var(--muted); }
+    .legend-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
+    .bars-wrap { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 1.75rem; }
+    .bars-wrap h4 { font-size: 1rem; font-weight: 700; margin-bottom: 1.25rem; color: var(--text); }
+    .progress-item { margin-bottom: 1.25rem; }
+    .progress-header { display: flex; justify-content: space-between; margin-bottom: 0.4rem; }
+    .progress-label { font-size: 0.85rem; font-weight: 600; }
+    .progress-val { font-size: 0.85rem; color: var(--muted); }
+    .progress-bar-bg { height: 8px; background: rgba(255,255,255,0.06); border-radius: 4px; overflow: hidden; }
+    .progress-bar { height: 100%; border-radius: 4px; width: 0; transition: width 1.2s cubic-bezier(.4,0,.2,1); }
+    .top3 { margin-top: 1.5rem; }
+    .top3 h5 { font-size: 0.85rem; font-weight: 700; color: var(--muted); margin-bottom: 0.75rem; text-transform: uppercase; letter-spacing: 0.05em; }
+    .top3-item { display: flex; justify-content: space-between; align-items: center; padding: 0.5rem 0; border-bottom: 1px solid var(--border); font-size: 0.85rem; }
+    .top3-item:last-child { border-bottom: none; }
+    .top3-val { color: var(--accent); font-weight: 700; }
+    .comparison { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; }
+    .comp-card { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 1.5rem; }
+    .comp-card h4 { font-size: 0.95rem; font-weight: 700; margin-bottom: 1rem; color: var(--text); }
+    .comp-card ul { list-style: none; display: flex; flex-direction: column; gap: 0.5rem; }
+    .comp-card ul li { font-size: 0.84rem; color: var(--muted); display: flex; gap: 0.5rem; align-items: center; }
+    .comp-card ul li::before { content: '→'; color: var(--accent); }
+
+    /* ===== TIMELINE ===== */
+    .timeline { position: relative; padding-left: 2rem; }
+    .timeline::before { content: ''; position: absolute; left: 8px; top: 0; bottom: 0; width: 2px; background: var(--border); }
+    .tl-item { position: relative; margin-bottom: 2.5rem; }
+    .tl-dot {
+      position: absolute; left: -2rem; top: 0.25rem;
+      width: 18px; height: 18px; border-radius: 50%;
+      background: var(--accent); border: 3px solid var(--bg);
+      display: flex; align-items: center; justify-content: center;
+    }
+    .tl-content { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 1.25rem 1.5rem; }
+    .tl-date { font-size: 0.75rem; color: var(--accent); font-weight: 600; margin-bottom: 0.3rem; text-transform: uppercase; letter-spacing: 0.06em; }
+    .tl-content h4 { font-size: 1rem; font-weight: 700; margin-bottom: 0.25rem; }
+    .tl-content p { font-size: 0.85rem; color: var(--muted); }
+
+    /* ===== TEAM ===== */
+    #team { background: rgba(26,34,52,0.35); }
+    .team-grid { display: grid; grid-template-columns: repeat(4,1fr); gap: 1.5rem; }
+    .team-card {
+      background: var(--card); border: 1px solid var(--border); border-radius: 12px;
+      padding: 2rem 1.5rem; text-align: center;
+      transition: border-color 0.25s, transform 0.25s;
+    }
+    .team-card:hover { transform: translateY(-4px); }
+    .team-card-env:hover { border-color: var(--env); }
+    .team-card-soc:hover { border-color: var(--soc); }
+    .team-card-eco:hover { border-color: var(--eco); }
+    .team-card-gov:hover { border-color: var(--gov); }
+    .team-avatar {
+      width: 72px; height: 72px; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.8rem; margin: 0 auto 1rem;
+    }
+    .av-env { background: rgba(16,185,129,0.15); border: 2px solid rgba(16,185,129,0.35); }
+    .av-soc { background: rgba(59,130,246,0.15); border: 2px solid rgba(59,130,246,0.35); }
+    .av-eco { background: rgba(245,158,11,0.15); border: 2px solid rgba(245,158,11,0.35); }
+    .av-gov { background: rgba(139,92,246,0.15); border: 2px solid rgba(139,92,246,0.35); }
+    .team-card h4 { font-size: 1rem; font-weight: 700; margin-bottom: 0.25rem; }
+    .team-card .role { font-size: 0.8rem; color: var(--muted); }
+    .team-badge {
+      display: inline-block; margin-top: 0.75rem;
+      padding: 0.2rem 0.7rem; border-radius: 20px; font-size: 0.72rem; font-weight: 600;
+    }
+    .tb-env { background: rgba(16,185,129,0.12); color: var(--env); }
+    .tb-soc { background: rgba(59,130,246,0.12); color: var(--soc); }
+    .tb-eco { background: rgba(245,158,11,0.12); color: var(--eco); }
+    .tb-gov { background: rgba(139,92,246,0.12); color: var(--gov); }
+
+    /* ===== CTA BANNER ===== */
+    .cta-banner {
+      padding: 4rem 2rem;
+      text-align: center;
+      background: linear-gradient(135deg, rgba(6,182,212,0.1) 0%, rgba(139,92,246,0.1) 100%);
+      border-top: 1px solid var(--border); border-bottom: 1px solid var(--border);
+    }
+    .cta-banner h2 { font-size: clamp(1.4rem, 3vw, 2rem); font-weight: 800; margin-bottom: 0.75rem; }
+    .cta-banner p { color: var(--muted); margin-bottom: 2rem; max-width: 480px; margin-left: auto; margin-right: auto; }
+
+    /* ===== REFERENCES ===== */
+    .refs-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+    .ref-card {
+      background: var(--card); border: 1px solid var(--border); border-radius: 10px;
+      padding: 1.1rem 1.3rem; display: flex; gap: 0.9rem; align-items: flex-start;
+      transition: border-color 0.2s;
+    }
+    .ref-card:hover { border-color: var(--accent); }
+    .ref-icon { font-size: 1.3rem; flex-shrink: 0; margin-top: 2px; }
+    .ref-title { font-size: 0.88rem; font-weight: 600; margin-bottom: 0.2rem; }
+    .ref-meta { font-size: 0.78rem; color: var(--muted); }
+
+    /* ===== FOOTER ===== */
+    footer {
+      padding: 2.5rem 2rem; background: #070b14;
+      border-top: 1px solid var(--border); text-align: center;
+    }
+    .footer-inner { max-width: 1200px; margin: 0 auto; }
+    .footer-name { font-size: 1.1rem; font-weight: 800; color: var(--accent); margin-bottom: 0.4rem; }
+    .footer-year { font-size: 0.82rem; color: var(--muted); margin-bottom: 1rem; }
+    .footer-dims { display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap; }
+    .footer-dim { font-size: 0.78rem; font-weight: 600; padding: 0.2rem 0.7rem; border-radius: 20px; }
+    .fd-env { background: rgba(16,185,129,0.12); color: var(--env); }
+    .fd-soc { background: rgba(59,130,246,0.12); color: var(--soc); }
+    .fd-eco { background: rgba(245,158,11,0.12); color: var(--eco); }
+    .fd-gov { background: rgba(139,92,246,0.12); color: var(--gov); }
+
+    /* ===== RESPONSIVE ===== */
+    @media (max-width: 900px) {
+      .about-grid { grid-template-columns: 1fr; }
+      .obj-grid { grid-template-columns: 1fr 1fr; }
+      .meth-grid { grid-template-columns: 1fr 1fr; }
+      .results-main { grid-template-columns: 1fr; }
+      .comparison { grid-template-columns: 1fr; }
+      .team-grid { grid-template-columns: 1fr 1fr; }
+      .refs-grid { grid-template-columns: 1fr; }
+      .fw-level { flex-direction: column; align-items: flex-start; }
+      .fw-level-label { width: auto; text-align: left; }
+      .nav-links { display: none; }
+    }
+    @media (max-width: 560px) {
+      .obj-grid { grid-template-columns: 1fr; }
+      .meth-grid { grid-template-columns: 1fr; }
+      .team-grid { grid-template-columns: 1fr 1fr; }
+      .solution-stats { grid-template-columns: 1fr 1fr; }
+      .hero-stats { gap: 1.25rem; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ===== NAVBAR ===== -->
+<nav class="navbar" id="navbar">
+  <div class="nav-inner">
+    <div class="nav-logo">🏗️ SRF Infrastructure</div>
+    <ul class="nav-links">
+      <li><a href="#about">About</a></li>
+      <li><a href="#objectives">Objectives</a></li>
+      <li><a href="#architecture">Framework</a></li>
+      <li><a href="#results">Results</a></li>
+      <li><a href="#team">Team</a></li>
+    </ul>
+    <a href="survey.html" class="nav-cta">Take AHP Survey →</a>
+  </div>
+</nav>
+
+<!-- ===== HERO ===== -->
+<section class="hero" id="home">
+  <div class="hero-bg"></div>
+  <div class="hero-grid"></div>
+  <div class="hero-content fade-in">
+    <div class="hero-badge">AHP · Multi-Criteria · Indian Infrastructure</div>
+    <h1>Sustainability Rating Framework &amp; Criteria Hierarchy for Infrastructure Projects in the Indian Context</h1>
+    <p>An AHP-based multi-criteria decision framework featuring 1 unified goal, 4 sustainability dimensions, 16 categories, and 64 sub-criteria — tailored for India's infrastructure landscape.</p>
+    <div class="hero-buttons">
+      <a href="#architecture" class="btn-primary">Explore Framework ↓</a>
+      <a href="survey.html" class="btn-outline">Take Expert Survey →</a>
+    </div>
+    <div class="hero-stats">
+      <div class="hero-stat"><span class="num">64</span><span class="lbl">Sub-Criteria</span></div>
+      <div class="hero-stat"><span class="num">12</span><span class="lbl">Expert Responses</span></div>
+      <div class="hero-stat"><span class="num">0.0137</span><span class="lbl">Consistency Ratio</span></div>
+      <div class="hero-stat"><span class="num">20</span><span class="lbl">Research Papers</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== ABOUT ===== -->
+<section id="about">
+  <div class="section-inner">
+    <div class="about-grid fade-in">
+      <div class="about-problem">
+        <span class="section-badge">Problem Statement</span>
+        <h3 class="section-title">Why a New Framework?</h3>
+        <ul>
+          <li>GRIHA and IGBC ratings focus primarily on buildings, not linear infrastructure</li>
+          <li>International rating systems don't align with India's regulatory and environmental conditions</li>
+          <li>No balanced, multi-dimensional sustainability rating exists for Indian infrastructure projects</li>
+          <li>Long corridor projects (highways, metro) have unique challenges unaddressed by existing tools</li>
+        </ul>
+      </div>
+      <div class="about-solution">
+        <h3>Our Solution</h3>
+        <div class="solution-stats">
+          <div class="sol-stat sol-env"><span class="s-num">4</span><span class="s-lbl">Dimensions</span></div>
+          <div class="sol-stat sol-soc"><span class="s-num">16</span><span class="s-lbl">Categories</span></div>
+          <div class="sol-stat sol-eco"><span class="s-num">64</span><span class="s-lbl">Sub-Criteria</span></div>
+          <div class="sol-stat sol-gov"><span class="s-num">AHP</span><span class="s-lbl">Method</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== OBJECTIVES ===== -->
+<section id="objectives">
+  <div class="section-inner">
+    <span class="section-badge">Objectives</span>
+    <h2 class="section-title">Research Objectives</h2>
+    <div class="obj-grid fade-in">
+      <div class="obj-card obj-card-env">
+        <div class="obj-icon">🏗️</div>
+        <h4>Multi-Level Framework</h4>
+        <p>1 goal → 4 dimensions → 16 categories → 64 sub-criteria covering all aspects of infrastructure sustainability.</p>
+      </div>
+      <div class="obj-card obj-card-soc">
+        <div class="obj-icon">⚖️</div>
+        <h4>AHP Simplicity</h4>
+        <p>Groups of 4, pairwise comparisons — making expert judgment structured, consistent, and quantifiable.</p>
+      </div>
+      <div class="obj-card obj-card-eco">
+        <div class="obj-icon">📜</div>
+        <h4>Indian Law Alignment</h4>
+        <p>Grounded in RFCTLARR, Factories Act, URDPFI, IRC Standards, and IS 1893 for full regulatory fit.</p>
+      </div>
+      <div class="obj-card obj-card-gov">
+        <div class="obj-icon">🌐</div>
+        <h4>Online AHP Tool</h4>
+        <p>This web application enables remote expert participation, data collection, and real-time consistency checks.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== FRAMEWORK ARCHITECTURE ===== -->
+<section id="architecture">
+  <div class="section-inner">
+    <span class="section-badge">Framework Structure</span>
+    <h2 class="section-title">4-Level Hierarchy</h2>
+    <p class="section-sub">A structured decomposition from the overall sustainability goal down to 64 measurable sub-criteria.</p>
+    <div class="fw-levels fade-in">
+
+      <!-- Level 1 -->
+      <div class="fw-level">
+        <div class="fw-level-label">Level 1<br>Goal</div>
+        <div class="fw-level-content">
+          <div class="fw-goal">🎯 Overall Sustainability Goal</div>
+        </div>
+      </div>
+      <div class="fw-connector"></div>
+
+      <!-- Level 2 -->
+      <div class="fw-level">
+        <div class="fw-level-label">Level 2<br>Dimensions</div>
+        <div class="fw-level-content">
+          <div class="fw-dim fw-dim-env">🌿 Environmental<span>35.4%</span></div>
+          <div class="fw-dim fw-dim-soc">👥 Social<span>26.8%</span></div>
+          <div class="fw-dim fw-dim-eco">💰 Economic<span>23.1%</span></div>
+          <div class="fw-dim fw-dim-gov">🏛️ Governance<span>14.7%</span></div>
+        </div>
+      </div>
+      <div class="fw-connector"></div>
+
+      <!-- Level 3 -->
+      <div class="fw-level">
+        <div class="fw-level-label">Level 3<br>Categories</div>
+        <div class="fw-level-content">
+          <div class="fw-cats">
+            <div class="fw-cat">Air Quality</div>
+            <div class="fw-cat">Water Resource Mgmt.</div>
+            <div class="fw-cat">Land &amp; Soil Conservation</div>
+            <div class="fw-cat">Biodiversity &amp; Ecology</div>
+          </div>
+          <div class="fw-cats">
+            <div class="fw-cat">Community &amp; Resettlement</div>
+            <div class="fw-cat">Worker Health &amp; Safety</div>
+            <div class="fw-cat">Cultural Heritage</div>
+            <div class="fw-cat">Accessibility &amp; Inclusion</div>
+          </div>
+          <div class="fw-cats">
+            <div class="fw-cat">Cost &amp; Lifecycle</div>
+            <div class="fw-cat">Local Employment</div>
+            <div class="fw-cat">Infrastructure Durability</div>
+            <div class="fw-cat">Resource Optimization</div>
+          </div>
+          <div class="fw-cats">
+            <div class="fw-cat">Legal Compliance</div>
+            <div class="fw-cat">Transparency</div>
+            <div class="fw-cat">Digital Monitoring</div>
+            <div class="fw-cat">Stakeholder Engagement</div>
+          </div>
+        </div>
+      </div>
+      <div class="fw-connector"></div>
+
+      <!-- Level 4 -->
+      <div class="fw-level">
+        <div class="fw-level-label">Level 4<br>Sub-Criteria</div>
+        <div class="fw-level-content">
+          <div class="fw-sub">16 Sub-Criteria<br><small>Environmental</small></div>
+          <div class="fw-sub">16 Sub-Criteria<br><small>Social</small></div>
+          <div class="fw-sub">16 Sub-Criteria<br><small>Economic</small></div>
+          <div class="fw-sub">16 Sub-Criteria<br><small>Governance</small></div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ===== METHODOLOGY ===== -->
+<section id="methodology">
+  <div class="section-inner">
+    <span class="section-badge">Methodology</span>
+    <h2 class="section-title">Research Methodology</h2>
+    <p class="section-sub">A six-step rigorous process from legislative review to validated weight calculation.</p>
+    <div class="meth-grid fade-in">
+      <div class="meth-card">
+        <div class="step-label">Step 1</div>
+        <div class="meth-step-num">01</div>
+        <div class="meth-icon">🌿</div>
+        <h4>Law Review</h4>
+        <p>Reviewed RFCTLARR Act, Factories Act, URDPFI Guidelines, IRC Standards, IS 1893 to identify legally mandated sustainability criteria.</p>
+      </div>
+      <div class="meth-card">
+        <div class="step-label">Step 2</div>
+        <div class="meth-step-num">02</div>
+        <div class="meth-icon">🗂️</div>
+        <h4>Framework Design</h4>
+        <p>Structured a 4-level hierarchy — goal, dimensions, categories, sub-criteria — using expert panel discussions and literature mapping.</p>
+      </div>
+      <div class="meth-card">
+        <div class="step-label">Step 3</div>
+        <div class="meth-step-num">03</div>
+        <div class="meth-icon">🌐</div>
+        <h4>Web Tool Development</h4>
+        <p>Built this online AHP survey platform for remote expert participation, auto-matrix computation and live CR feedback.</p>
+      </div>
+      <div class="meth-card">
+        <div class="step-label">Step 4</div>
+        <div class="meth-step-num">04</div>
+        <div class="meth-icon">👩‍💼</div>
+        <h4>Expert Survey</h4>
+        <p>Collected responses from 12 infrastructure industry experts — planners, engineers, environmental consultants.</p>
+      </div>
+      <div class="meth-card">
+        <div class="step-label">Step 5</div>
+        <div class="meth-step-num">05</div>
+        <div class="meth-icon">📐</div>
+        <h4>Weight Calculation</h4>
+        <p>Aggregated responses using geometric mean and derived priority eigenvectors for each level of the hierarchy.</p>
+      </div>
+      <div class="meth-card">
+        <div class="step-label">Step 6</div>
+        <div class="meth-step-num">06</div>
+        <div class="meth-icon">✅</div>
+        <h4>Consistency Check</h4>
+        <p>Verified Consistency Ratio CR = 0.0137 — well below the 0.10 threshold — confirming judgment reliability.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== RESULTS ===== -->
+<section id="results">
+  <div class="section-inner">
+    <span class="section-badge">Results</span>
+    <h2 class="section-title">AHP Results &amp; Weights</h2>
+    <p class="section-sub">Derived from 12 expert responses aggregated via geometric mean.</p>
+
+    <div class="results-stats fade-in">
+      <div class="r-stat"><span class="r-num">0.0137</span><span class="r-lbl">Consistency Ratio (CR)</span></div>
+      <div class="r-stat"><span class="r-num">12</span><span class="r-lbl">Expert Respondents</span></div>
+      <div class="r-stat"><span class="r-num">&lt;0.10</span><span class="r-lbl">Acceptable Threshold</span></div>
+    </div>
+
+    <div class="results-main fade-in">
+      <div class="chart-wrap">
+        <h4>Dimension Weight Distribution</h4>
+        <div class="chart-canvas-wrap">
+          <canvas id="dimChart" width="280" height="280"></canvas>
+        </div>
+        <div class="chart-legend">
+          <div class="legend-item"><div class="legend-dot" style="background:#10b981"></div>Environmental 35.4%</div>
+          <div class="legend-item"><div class="legend-dot" style="background:#3b82f6"></div>Social 26.8%</div>
+          <div class="legend-item"><div class="legend-dot" style="background:#f59e0b"></div>Economic 23.1%</div>
+          <div class="legend-item"><div class="legend-dot" style="background:#8b5cf6"></div>Governance 14.7%</div>
+        </div>
+      </div>
+
+      <div class="bars-wrap">
+        <h4>Dimension Priorities</h4>
+        <div class="progress-item">
+          <div class="progress-header">
+            <span class="progress-label" style="color:var(--env)">🌿 Environmental</span>
+            <span class="progress-val">35.4%</span>
+          </div>
+          <div class="progress-bar-bg"><div class="progress-bar" data-width="35.4" style="background:var(--env)"></div></div>
+        </div>
+        <div class="progress-item">
+          <div class="progress-header">
+            <span class="progress-label" style="color:var(--soc)">👥 Social</span>
+            <span class="progress-val">26.8%</span>
+          </div>
+          <div class="progress-bar-bg"><div class="progress-bar" data-width="26.8" style="background:var(--soc)"></div></div>
+        </div>
+        <div class="progress-item">
+          <div class="progress-header">
+            <span class="progress-label" style="color:var(--eco)">💰 Economic</span>
+            <span class="progress-val">23.1%</span>
+          </div>
+          <div class="progress-bar-bg"><div class="progress-bar" data-width="23.1" style="background:var(--eco)"></div></div>
+        </div>
+        <div class="progress-item">
+          <div class="progress-header">
+            <span class="progress-label" style="color:var(--gov)">🏛️ Governance</span>
+            <span class="progress-val">14.7%</span>
+          </div>
+          <div class="progress-bar-bg"><div class="progress-bar" data-width="14.7" style="background:var(--gov)"></div></div>
+        </div>
+
+        <div class="top3">
+          <h5>🏆 Top 3 Global Sub-Criteria</h5>
+          <div class="top3-item"><span>🏘️ Fair Land Buying</span><span class="top3-val">0.0452</span></div>
+          <div class="top3-item"><span>💧 Protecting Water Bodies</span><span class="top3-val">0.0438</span></div>
+          <div class="top3-item"><span>🌊 Flood &amp; Extreme Weather Defense</span><span class="top3-val">0.0381</span></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="comparison fade-in">
+      <div class="comp-card">
+        <h4>🛣️ Rural Highway Priorities</h4>
+        <ul>
+          <li>Land acquisition fairness (RFCTLARR)</li>
+          <li>Biodiversity corridor protection</li>
+          <li>Flood resilience &amp; drainage</li>
+          <li>Local employment generation</li>
+          <li>Dust &amp; air quality near villages</li>
+        </ul>
+      </div>
+      <div class="comp-card">
+        <h4>🚇 City Metro Priorities</h4>
+        <ul>
+          <li>Noise &amp; vibration mitigation</li>
+          <li>Worker safety in confined tunnels</li>
+          <li>Heritage zone compliance</li>
+          <li>Accessibility for differently-abled</li>
+          <li>Digital monitoring systems</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== TIMELINE ===== -->
+<section id="timeline">
+  <div class="section-inner">
+    <span class="section-badge">Project Timeline</span>
+    <h2 class="section-title">Research Milestones</h2>
+    <p class="section-sub" style="margin-bottom:2.5rem;">From literature review to validated framework — completed over two months.</p>
+    <div class="timeline fade-in">
+      <div class="tl-item">
+        <div class="tl-dot"></div>
+        <div class="tl-content">
+          <div class="tl-date">📖 Aug Week 1–2</div>
+          <h4>Literature Review &amp; Topic Finalisation</h4>
+          <p>Reviewed 20+ papers on sustainability rating, AHP methodology, and Indian infrastructure regulations.</p>
+        </div>
+      </div>
+      <div class="tl-item">
+        <div class="tl-dot"></div>
+        <div class="tl-content">
+          <div class="tl-date">🗂️ Aug Week 3–4</div>
+          <h4>Framework Development</h4>
+          <p>Designed the 4-level hierarchy: 1 goal, 4 dimensions, 16 categories, 64 sub-criteria grounded in Indian law.</p>
+        </div>
+      </div>
+      <div class="tl-item">
+        <div class="tl-dot"></div>
+        <div class="tl-content">
+          <div class="tl-date">🌐 Sep Week 1</div>
+          <h4>Web Application Development &amp; Launch</h4>
+          <p>Built and deployed the online AHP survey tool with real-time matrix computation and consistency checking.</p>
+        </div>
+      </div>
+      <div class="tl-item">
+        <div class="tl-dot"></div>
+        <div class="tl-content">
+          <div class="tl-date">👩‍💼 Sep Week 2</div>
+          <h4>Expert Data Collection</h4>
+          <p>Gathered 12 expert responses from infrastructure planners, environmental consultants, and civil engineers.</p>
+        </div>
+      </div>
+      <div class="tl-item">
+        <div class="tl-dot"></div>
+        <div class="tl-content">
+          <div class="tl-date">✅ Sep Week 3–4</div>
+          <h4>Analysis, Testing &amp; Report</h4>
+          <p>Computed final weights, verified CR = 0.0137, completed sensitivity analysis, and finalised project report.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== TEAM ===== -->
+<section id="team">
+  <div class="section-inner">
+    <span class="section-badge">Team</span>
+    <h2 class="section-title">Research Team</h2>
+    <p class="section-sub" style="margin-bottom:2.5rem;">Four members, each leading one sustainability dimension.</p>
+    <div class="team-grid fade-in">
+      <div class="team-card team-card-env">
+        <div class="team-avatar av-env">🌿</div>
+        <h4>Member A</h4>
+        <p class="role">Environmental Lead</p>
+        <span class="team-badge tb-env">Environmental</span>
+      </div>
+      <div class="team-card team-card-soc">
+        <div class="team-avatar av-soc">👥</div>
+        <h4>Member B</h4>
+        <p class="role">Social Impact Lead</p>
+        <span class="team-badge tb-soc">Social</span>
+      </div>
+      <div class="team-card team-card-eco">
+        <div class="team-avatar av-eco">💰</div>
+        <h4>Member C</h4>
+        <p class="role">Economic Analysis Lead</p>
+        <span class="team-badge tb-eco">Economic</span>
+      </div>
+      <div class="team-card team-card-gov">
+        <div class="team-avatar av-gov">🏛️</div>
+        <h4>Member D</h4>
+        <p class="role">Governance Lead</p>
+        <span class="team-badge tb-gov">Governance</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== CTA BANNER ===== -->
+<div class="cta-banner">
+  <h2>Are You an Infrastructure Expert?</h2>
+  <p>Your professional judgment shapes the sustainability weights. Take our 15-minute AHP survey and contribute to India's first infrastructure-specific rating framework.</p>
+  <a href="survey.html" class="btn-primary" style="display:inline-block;">Start Expert Survey →</a>
+</div>
+
+<!-- ===== REFERENCES ===== -->
+<section id="references">
+  <div class="section-inner">
+    <span class="section-badge">References</span>
+    <h2 class="section-title">Key References</h2>
+    <div class="refs-grid fade-in">
+      <div class="ref-card">
+        <div class="ref-icon">📜</div>
+        <div>
+          <div class="ref-title">RFCTLARR Act, 2013</div>
+          <div class="ref-meta">Right to Fair Compensation and Transparency in Land Acquisition, Rehabilitation and Resettlement Act</div>
+        </div>
+      </div>
+      <div class="ref-card">
+        <div class="ref-icon">🏭</div>
+        <div>
+          <div class="ref-title">Factories Act, 1948</div>
+          <div class="ref-meta">Worker safety, health, and welfare provisions applicable to construction and operation phases</div>
+        </div>
+      </div>
+      <div class="ref-card">
+        <div class="ref-icon">🏙️</div>
+        <div>
+          <div class="ref-title">URDPFI Guidelines, 2014</div>
+          <div class="ref-meta">Urban &amp; Regional Development Plans Formulation &amp; Implementation — Ministry of Housing &amp; Urban Affairs</div>
+        </div>
+      </div>
+      <div class="ref-card">
+        <div class="ref-icon">🛣️</div>
+        <div>
+          <div class="ref-title">IRC Standards</div>
+          <div class="ref-meta">Indian Roads Congress specifications for highway design, safety, and environmental management</div>
+        </div>
+      </div>
+      <div class="ref-card">
+        <div class="ref-icon">🌊</div>
+        <div>
+          <div class="ref-title">IS 1893 (2016)</div>
+          <div class="ref-meta">Bureau of Indian Standards — Criteria for Earthquake Resistant Design of Structures</div>
+        </div>
+      </div>
+      <div class="ref-card">
+        <div class="ref-icon">📊</div>
+        <div>
+          <div class="ref-title">Saaty, T.L. (1980)</div>
+          <div class="ref-meta">The Analytic Hierarchy Process. McGraw-Hill. Foundational methodology for AHP weight derivation.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== FOOTER ===== -->
+<footer>
+  <div class="footer-inner">
+    <div class="footer-name">🏗️ SRF Infrastructure</div>
+    <div class="footer-year">Sustainability Rating Framework · © 2026</div>
+    <div class="footer-dims">
+      <span class="footer-dim fd-env">🌿 Environmental</span>
+      <span class="footer-dim fd-soc">👥 Social</span>
+      <span class="footer-dim fd-eco">💰 Economic</span>
+      <span class="footer-dim fd-gov">🏛️ Governance</span>
+    </div>
+  </div>
+</footer>
+
+<!-- ===== JAVASCRIPT ===== -->
+<script>
+  // ── Navbar scroll effect ──────────────────────────────────────────
+  const navbar = document.getElementById('navbar');
+  window.addEventListener('scroll', () => {
+    if (window.scrollY > 30) {
+      navbar.classList.add('scrolled');
+    } else {
+      navbar.classList.remove('scrolled');
+    }
+  }, { passive: true });
+
+  // ── Smooth scroll for nav links ───────────────────────────────────
+  document.querySelectorAll('a[href^="#"]').forEach(link => {
+    link.addEventListener('click', e => {
+      const target = document.querySelector(link.getAttribute('href'));
+      if (target) {
+        e.preventDefault();
+        target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+    });
+  });
+
+  // ── IntersectionObserver fade-in ──────────────────────────────────
+  let progressAnimated = false;
+  const fadeObserver = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('visible');
+        fadeObserver.unobserve(entry.target);
+
+        // Animate progress bars when results section becomes visible
+        if (entry.target.closest('#results') && !progressAnimated) {
+          progressAnimated = true;
+          setTimeout(animateBars, 300);
+        }
+      }
+    });
+  }, { threshold: 0.12, rootMargin: '0px 0px -60px 0px' });
+
+  document.querySelectorAll('.fade-in').forEach(el => fadeObserver.observe(el));
+
+  // ── Animated progress bars ────────────────────────────────────────
+  function animateBars() {
+    document.querySelectorAll('.progress-bar').forEach(bar => {
+      const target = parseFloat(bar.dataset.width);
+      bar.style.width = target + '%';
+    });
+  }
+
+  // ── Chart.js doughnut chart ───────────────────────────────────────
+  window.addEventListener('DOMContentLoaded', () => {
+    const ctx = document.getElementById('dimChart').getContext('2d');
+    new Chart(ctx, {
+      type: 'doughnut',
+      data: {
+        labels: ['Environmental', 'Social', 'Economic', 'Governance'],
+        datasets: [{
+          data: [35.4, 26.8, 23.1, 14.7],
+          backgroundColor: ['#10b981', '#3b82f6', '#f59e0b', '#8b5cf6'],
+          borderColor: ['#0e9e72', '#2c6fe4', '#d4870a', '#7440e0'],
+          borderWidth: 2,
+          hoverOffset: 8
+        }]
+      },
+      options: {
+        responsive: true,
+        cutout: '68%',
+        plugins: {
+          legend: { display: false },
+          tooltip: {
+            callbacks: {
+              label: ctx => ` ${ctx.label}: ${ctx.parsed}%`
+            },
+            backgroundColor: '#1a2234',
+            titleColor: '#e2e8f0',
+            bodyColor: '#94a3b8',
+            borderColor: '#2d3a52',
+            borderWidth: 1
+          }
+        },
+        animation: { animateRotate: true, duration: 1200 }
+      }
+    });
+  });
+</script>
+</body>
+</html>
